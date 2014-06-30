@@ -4,21 +4,25 @@ import (
 	"time"
 	"flag"
 	"fmt"
-	"math/rand"
+	"crypto/rand"
+	"math/big"
 )
 
 func main() {
 	// get commandline flags
-	var randmax = flag.Int("randmax", 30, "maximum delay (seconds)")
+	randmax := flag.Int("randmax", 30, "maximum delay (seconds)")
 	flag.Parse()
 
 	// generate random delay
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	randdelay := r.Intn(*randmax)
 
-	//fmt.Printf("Delaying for %v seconds", randdelay)
+	bigrandmax := big.NewInt(int64(*randmax))
+	randdelay, _ := rand.Int(rand.Reader, bigrandmax)
+
+	var randdelayint = int(randdelay.Int64())
+
+	fmt.Printf("Delaying for %v seconds", randdelayint)
 
 	// sleep
-	time.Sleep(time.Duration(randdelay)*time.Second) // prints 10s
+	time.Sleep(time.Duration(randdelayint)*time.Second) // prints 10s
 	
 }
