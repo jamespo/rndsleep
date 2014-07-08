@@ -7,6 +7,7 @@ import (
 	"crypto/rand"
 	"math/big"
 	"os/exec"
+	"strings"
 )
 
 func main() {
@@ -27,10 +28,15 @@ func main() {
 	// sleep
 	time.Sleep(time.Duration(randdelayint)*time.Second) // prints 10s
 
+	// split cmd with arguments
+	parts := strings.Fields(*command)
+	head := parts[0]
+        parts = parts[1:len(parts)]
+
 	// run command
-	out, err := exec.Command(*command).Output()
+	out, err := exec.Command(head, parts...).Output()
 	if err != nil {
-		fmt.Printf("Error %v\n", err)
+		fmt.Printf("Error %s\n", err)
 	}
-	fmt.Printf("Output is %v\n", out)
+	fmt.Printf("Output is %s", out)
 }
