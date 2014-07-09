@@ -1,42 +1,57 @@
 package main
 
-import ( 
-	"time"
+import (
+	"crypto/rand"
 	"flag"
 	"fmt"
-	"crypto/rand"
 	"math/big"
 	"os/exec"
 	"strings"
+	"time"
 )
+
+// generate random # up to *randmax
+func genRand(randmax *int) int {
+	bigrandmax := big.NewInt(int64(*randmax))
+	randdelay, _ := rand.Int(rand.Reader, bigrandmax)
+	return int(randdelay.Int64())
+}
+
+// Display msg if verbose set
+func verboseMsg(msg string, verbose *bool) {
+	if *verbose {
+		fmt.Printf("%s\n", msg)
+	}
+}
 
 func main() {
 	// get commandline flags
 	randmax := flag.Int("randmax", 30, "maximum delay (seconds)")
-	command := flag.String("command", "ls", "command")
+	command := flag.String("command", "", "command")
+	verbose := flag.Bool("verbose", false, "verbose")
 	flag.Parse()
 
 	// generate random delay
+	var randdelayint = genRand(randmax)
 
-	bigrandmax := big.NewInt(int64(*randmax))
-	randdelay, _ := rand.Int(rand.Reader, bigrandmax)
-
-	var randdelayint = int(randdelay.Int64())
-
-	fmt.Printf("Delaying %v for %v seconds\n", *command, randdelayint)
+	verboseMsg(fmt.Sprintf("Delaying %v for %v seconds", *command, randdelayint), verbose)
 
 	// sleep
-	time.Sleep(time.Duration(randdelayint)*time.Second) // prints 10s
-
-	// split cmd with arguments
-	parts := strings.Fields(*command)
-	head := parts[0]
-        parts = parts[1:len(parts)]
+	time.Sleep(time.Duration(randdelayint) * time.Second) // prints 10s
 
 	// run command
-	out, err := exec.Command(head, parts...).Output()
-	if err != nil {
-		fmt.Printf("Error %s\n", err)
+	if *command == "" {
+		//fmt.Printf("No command supplied\n")
+		verboseMsg("No command supplied", verbose)
+	} else {
+		// split cmd with arguments
+		parts := strings.Fields(*command)
+		cmd := parts[0]
+		args := parts[1:len(parts)]
+		out, err := exec.Command(cmd, args...).Output()
+		if err != nil {
+			fmt.Printf("Error %s\n", err)
+		}
+		fmt.Printf("%s", out)
 	}
-	fmt.Printf("Output is %s", out)
 }
