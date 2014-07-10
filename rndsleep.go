@@ -24,11 +24,20 @@ func verboseMsg(msg string, verbose *bool) {
 	}
 }
 
+func runCmd(command *string) ([]byte, error) {
+	// split cmd with arguments
+	parts := strings.Fields(*command)
+	cmd := parts[0]
+	args := parts[1:len(parts)]
+	out, err := exec.Command(cmd, args...).Output()
+	return out, err
+}
+
 func main() {
 	// get commandline flags
 	randmax := flag.Int("randmax", 30, "maximum delay (seconds)")
-	command := flag.String("command", "", "command")
-	verbose := flag.Bool("verbose", false, "verbose")
+	command := flag.String("command", "", "command to run")
+	verbose := flag.Bool("verbose", false, "enable verbose output")
 	flag.Parse()
 
 	// generate random delay
@@ -44,11 +53,8 @@ func main() {
 		//fmt.Printf("No command supplied\n")
 		verboseMsg("No command supplied", verbose)
 	} else {
-		// split cmd with arguments
-		parts := strings.Fields(*command)
-		cmd := parts[0]
-		args := parts[1:len(parts)]
-		out, err := exec.Command(cmd, args...).Output()
+		verboseMsg(fmt.Sprintf("Running %s\n", *command), verbose)
+		out, err := runCmd(command)
 		if err != nil {
 			fmt.Printf("Error %s\n", err)
 		}
