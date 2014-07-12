@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"math/big"
+	"net"
 	"os/exec"
 	"strings"
 	"time"
@@ -44,6 +45,15 @@ func main() {
 	var randdelayint = genRand(randmax)
 
 	verboseMsg(fmt.Sprintf("Delaying %v for %v seconds", *command, randdelayint), verbose)
+
+	// open socket
+	listener, list_err := net.Listen("tcp", ":8080")
+	if list_err != nil {
+		fmt.Printf("Couldn't get lock")
+	}
+	conn, _ := listener.Accept()
+	var cmd []byte
+	fmt.Fscan(conn, &cmd)
 
 	// sleep
 	time.Sleep(time.Duration(randdelayint) * time.Second) // prints 10s
