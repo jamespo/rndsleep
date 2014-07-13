@@ -6,10 +6,21 @@ import (
 	"fmt"
 	"math/big"
 	"net"
+	"os"
 	"os/exec"
 	"strings"
 	"time"
 )
+
+func server(port *int) {
+	// listen on a port
+	_, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", *port))
+	if err != nil {
+		fmt.Println("Can't open lock socket")
+		fmt.Println(err)
+		os.Exit(1)
+	}
+}
 
 // generate random # up to *randmax
 func genRand(randmax *int) int {
@@ -39,21 +50,19 @@ func main() {
 	randmax := flag.Int("randmax", 30, "maximum delay (seconds)")
 	command := flag.String("command", "", "command to run")
 	verbose := flag.Bool("verbose", false, "enable verbose output")
+	port := flag.Int("port", 0, "localhost TCP port to lock on")
 	flag.Parse()
+
+	if *port != 0 {
+		// open socket
+		verboseMsg(fmt.Sprintf("Locking on 127.0.0.1:%d", *port), verbose)
+		go server(port)
+	}
 
 	// generate random delay
 	var randdelayint = genRand(randmax)
 
 	verboseMsg(fmt.Sprintf("Delaying %v for %v seconds", *command, randdelayint), verbose)
-
-	// open socket
-	listener, list_err := net.Listen("tcp", ":8080")
-	if list_err != nil {
-		fmt.Printf("Couldn't get lock")
-	}
-	conn, _ := listener.Accept()
-	var cmd []byte
-	fmt.Fscan(conn, &cmd)
 
 	// sleep
 	time.Sleep(time.Duration(randdelayint) * time.Second) // prints 10s
