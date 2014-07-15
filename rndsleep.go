@@ -47,7 +47,7 @@ func runCmd(command *string) ([]byte, error) {
 
 func main() {
 	// get commandline flags
-	randmax := flag.Int("randmax", 30, "maximum delay (seconds)")
+	randmax := flag.Int("randmax", 0, "maximum delay (seconds)")
 	command := flag.String("command", "", "command to run")
 	verbose := flag.Bool("verbose", false, "enable verbose output")
 	port := flag.Int("port", 0, "localhost TCP port to lock on")
@@ -59,13 +59,13 @@ func main() {
 		go server(port)
 	}
 
-	// generate random delay
-	var randdelayint = genRand(randmax)
-
-	verboseMsg(fmt.Sprintf("Delaying %v for %v seconds", *command, randdelayint), verbose)
-
-	// sleep
-	time.Sleep(time.Duration(randdelayint) * time.Second) // prints 10s
+	if *randmax > 0 {
+		// generate random delay
+		var randdelayint = genRand(randmax)
+		verboseMsg(fmt.Sprintf("Delaying %v for %v seconds", *command, randdelayint), verbose)
+		// sleep
+		time.Sleep(time.Duration(randdelayint) * time.Second) // prints 10s
+	}
 
 	// run command
 	if *command == "" {

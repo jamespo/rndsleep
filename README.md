@@ -18,7 +18,7 @@ With default arguments shown
        rndsleep
          -command="": command to run
          -port=0: localhost TCP port to lock on
-         -randmax=30: maximum delay (seconds)
+         -randmax=0: maximum delay (seconds)
          -verbose=false: enable verbose output
 
 ### Specifying a port ###
