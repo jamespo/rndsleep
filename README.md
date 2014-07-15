@@ -23,8 +23,9 @@ With default arguments shown
 
 ### Specifying a port ###
 
-Port allows you to specify a TCP port on localhost that rndsleep will listen on. Nothing will be done with input on this socket but rndsleep will fail and the command will not be run if this socket can't be opened - hence this stops duplicate invocations. This could be useful if you want to eg invoke a puppet run immediately (eg with ansible) and prevent the cronned instance running.
+Port allows you to specify a TCP port on localhost that rndsleep will listen on. Nothing will be done with input on this socket but rndsleep will fail and the command will not be run if this socket can't be opened - hence this stops duplicate invocations. This could be useful if you want to invoke a puppet run immediately (perhaps remotely with ansible) and prevent the cronned instance running.
 
 So (1) ensure this doesn't collide with other local ports on your system (eg 3306 for mysql) and (2) if you want to use this feature choose a unique port per job executed (eg port 14355 for puppet runs, port 14356 for database maintenance jobs).
 
+By default this argument is set to 0 and disabled.
 
