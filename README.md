@@ -5,9 +5,9 @@ A command-line utility written in Go to sleep for a random period, then run anot
 
 Typical usage would be to run puppet agent in onetime mode in cron to save resources - the random sleep will help to avoid thundering herd issues at the puppetmaster.
 
-`rndsleep --command="puppet agent --no-daemonize --onetime"`
+`rndsleep --randmax=30 --command="puppet agent --no-daemonize --onetime"`
 
-would run puppet agent with a random timeout of 0-30s (default).
+would run puppet agent with a random timeout of 0-30s.
 
 Can be compiled on all platforms that Go is available for.
 
